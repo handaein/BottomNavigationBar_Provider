@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'prov/userProvider.dart';
+import 'prov/bottomNaviProvider.dart';
+import 'prov/eventProvider.dart';
+
+import 'view/home.dart';
+import 'view/profile.dart';
+import 'view/setting.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -12,9 +20,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider<BottomNavigationBarProvider>(
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => BottomNavigationBarProvider()),
+          FutureProvider(create: (_) => UserProvider().loadUser()),
+          StreamProvider(create: (_) => EventProvider().intStream(), initialData: 0)
+        ],
         child: BottomNavigationBarExample(),
-        create: (BuildContext context) => BottomNavigationBarProvider(),
       ),
     );
   }
@@ -63,55 +75,4 @@ class _BottomNavigationBarExampleState
   }
 }
 
-class Home extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-          child: Text(
-        "Home",
-        style: TextStyle(fontSize: 30),
-      )),
-    );
-  }
-}
 
-class Profile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(
-            "Profile",
-            style: TextStyle(fontSize: 30),
-
-        ),
-      ),
-    );
-  }
-}
-
-class Setting extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-          child:  Text(
-          "Settings",
-          style: TextStyle( fontSize: 30),
-
-      )),
-    );
-  }
-}
-
-class BottomNavigationBarProvider with ChangeNotifier {
-  int _currentIndex = 0;
-
-  get currentIndex => _currentIndex;
-
-  set currentIndex(int index) {
-    _currentIndex = index;
-    notifyListeners();
-  }
-}
